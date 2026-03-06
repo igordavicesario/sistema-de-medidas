@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Médias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    p {
+      color: #888;
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: #555;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    .notas-lista {
+      margin-bottom: 12px;
+    }
+
+    .nota-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .nota-item input {
+      margin-bottom: 0;
+    }
+
+    .btn-remover {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      color: #999;
+      font-size: 0.9rem;
+    }
+    .btn-remover:hover { border-color: #f44336; color: #f44336; }
+
+    .btn-adicionar {
+      width: 100%;
+      padding: 10px;
+      background: none;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
+      color: #888;
+      font-size: 0.88rem;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+    .btn-adicionar:hover { border-color: #1565c0; color: #1565c0; }
+
+    .btn-calcular {
+      width: 100%;
+      padding: 12px;
+      background: #1565c0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-calcular:hover { background: #1976d2; }
+
+    .resultado {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+    .resultado .media {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .resultado .situacao {
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .aprovado    { background: #e8f5e9; color: #2e7d32; }
+    .recuperacao { background: #fff8e1; color: #f57f17; }
+    .reprovado   { background: #ffebee; color: #c62828; }
+  </style>
+</head>
+<body>
+
+  <h1>Calculadora de Médias</h1>
+  <p>Digite as notas e clique em calcular</p>
+
+  <div class="card">
+    <div class="notas-lista" id="notas-lista"></div>
+
+    <button class="btn-adicionar" onclick="adicionarNota()">+ adicionar nota</button>
+    <button class="btn-calcular" onclick="calcularMedia()">Calcular média</button>
+
+    <div class="resultado" id="resultado">
+      <div class="media" id="media-valor"></div>
+      <div class="situacao" id="situacao-texto"></div>
+    </div>
+  </div>
+
+  <script>
+    let contador = 0;
+
+    function adicionarNota() {
+      contador++;
+      const lista = document.getElementById('notas-lista');
+      const div = document.createElement('div');
+      div.className = 'nota-item';
+      div.id = `nota-${contador}`;
+      div.innerHTML = `
+        <input type="number" min="0" max="10" step="0.1" placeholder="Nota ${contador}">
+        <button class="btn-remover" onclick="removerNota(${contador})">×</button>
+      `;
+      lista.appendChild(div);
+    }
+
+    function removerNota(id) {
+      const el = document.getElementById(`nota-${id}`);
+      if (el) el.remove();
+    }
+
+    function calcularMedia() {
+      const inputs = document.querySelectorAll('.nota-item input');
+      const notas = [];
+
+      inputs.forEach(input => {
+        const valor = parseFloat(input.value);
+        if (!isNaN(valor)) notas.push(valor);
+      });
+
+      if (notas.length === 0) {
+        alert('Adicione pelo menos uma nota!');
+        return;
+      }
+
+      const soma = notas.reduce((total, n) => total + n, 0);
+      const media = soma / notas.length;
+
+      const resultadoEl  = document.getElementById('resultado');
+      const mediaEl      = document.getElementById('media-valor');
+      const situacaoEl   = document.getElementById('situacao-texto');
+
+      mediaEl.textContent = media.toFixed(2);
+      resultadoEl.className = 'resultado';
+
+      if (media >= 7) {
+        situacaoEl.textContent = '✅ Aprovado';
+        resultadoEl.classList.add('aprovado');
+      } else if (media >= 5) {
+        situacaoEl.textContent = '⚠️ Recuperação';
+        resultadoEl.classList.add('recuperacao');
+      } else {
+        situacaoEl.textContent = '❌ Reprovado';
+        resultadoEl.classList.add('reprovado');
+      }
+
+      resultadoEl.style.display = 'block';
+    }
+
+    // começa com 3 notas
+    adicionarNota();
+    adicionarNota();
+    adicionarNota();
+  </script>
+
+</body>
+</html>
